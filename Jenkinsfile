@@ -7,8 +7,6 @@ pipeline {
 
     environment {
         DOCKER_IMAGE = 'my-node-app'
-        DEPLOYMENT_FILE = 'deployment.yaml'
-        SERVICE_FILE = 'service.yaml'
     }
 
     stages {
@@ -42,6 +40,13 @@ pipeline {
     //         }
     //     }
     // }
+        stage('Check Kubernetes Cluster') {
+          steps {
+            bat 'kubectl config current-context'
+            bat 'kubectl cluster-info'
+            bat 'kubectl get nodes'
+          }
+        }
         stage('Deploy to Kubernetes') {
             steps {
                 bat 'kubectl delete -f deployment.yaml || echo "No existing deployment to delete"'
