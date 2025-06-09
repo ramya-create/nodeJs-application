@@ -21,28 +21,28 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                bat 'npm install'
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh 'npm test || echo "No tests found."'
+                bat 'npm test || echo "No tests found."'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t my-node-app .'
+                bat 'docker build -t my-node-app .'
             }
         }
 
         stage('Run Docker Container') {
             steps {
                 // Clean up if already running
-                sh 'docker rm -f node-app || true'
+                bat 'docker rm -f node-app || true'
                 // Run the container
-                sh 'docker run -d --name node-app -p 3000:3000 my-node-app'
+                bat 'docker run -d --name node-app -p 3000:3000 my-node-app'
             }
         }
     }
