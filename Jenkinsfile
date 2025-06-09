@@ -13,7 +13,9 @@ pipeline {
 
         stage('Clone Repo') {
             steps {
-                git 'https://github.com/ramya-create/nodeJs-application.git'
+                git branch: 'main', 
+                    url: 'https://github.com/ramya-create/nodeJs-application.git'
+
             }
         }
 
