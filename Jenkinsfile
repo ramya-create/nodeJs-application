@@ -61,8 +61,10 @@ pipeline {
 
         stage('Access App') {
             steps {
+                script {
                     def appUrl = bat(script: 'minikube service my-node-service --url', returnStdout: true).trim()
                     echo "🌐 Application URL: ${appUrl}"
+                }
             }
         }
     }
