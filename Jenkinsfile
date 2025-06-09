@@ -30,17 +30,41 @@ pipeline {
                 bat 'docker build -t my-node-app .'
             }
         }
-
-        stage('Run Docker Container') {
+    // for running docker image
+    //     stage('Run Docker Container') {
+    //         steps {
+    //             // Clean up if already running
+    //             bat 'docker rm -f node-app || true'
+    //             // Run the container
+    //             bat 'docker run -d --name node-app -p 3000:3000 my-node-app'
+    //         }
+    //     }
+    // }
+        stage('Deploy to Kubernetes') {
             steps {
-                // Clean up if already running
-                bat 'docker rm -f node-app || true'
-                // Run the container
-                bat 'docker run -d --name node-app -p 3000:3000 my-node-app'
+                bat 'kubectl delete -f deployment.yaml || echo "No existing deployment to delete"'
+                bat 'kubectl apply -f deployment.yaml'
+            }
+        }
+        stage('Expose Service') {
+            steps {
+                bat 'kubectl apply -f service.yaml'
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                bat 'kubectl get pods'
+                bat 'kubectl get svc'
+            }
+        }
+
+        stage('Access App') {
+            steps {
+                bat 'minikube service my-node-service'
             }
         }
     }
-
     post {
         success {
             echo '✅ Build and deployment successful!'
