@@ -78,6 +78,7 @@ pipeline {
                 script { 
                     def minikubeIp = bat(script: 'minikube ip', returnStdout: true).trim()
                     def svcJson = bat(script: 'kubectl get svc my-node-service -o json', returnStdout: true).trim()
+                    echo "JSON content: ${svcJson}"
                     def json = readJSON text: svcJson
                     def nodePort = json.spec.ports[0].nodePort
                     def appUrl = "http://${minikubeIp}:${nodePort}"
