@@ -47,12 +47,19 @@ pipeline {
             bat 'kubectl get nodes'
           }
         }
+        
         stage('Deploy to Kubernetes') {
             steps {
-                bat 'kubectl delete -f deployment.yaml || echo "No existing deployment to delete"'
+                script {
+                    def deleteStatus = bat(script: 'kubectl delete -f deployment.yaml', returnStatus: true)
+                    if (deleteStatus != 0) {
+                        echo 'No existing deployment to delete or deletion failed, continuing...'
+                    }
+                }
                 bat 'kubectl apply -f deployment.yaml'
             }
         }
+        
         stage('Expose Service') {
             steps {
                 bat 'kubectl apply -f service.yaml'
@@ -82,7 +89,7 @@ pipeline {
     post {
          always {
             echo 'Cleaning workspace and releasing agent...'
-            // cleanWs()
+            cleanWs()
             // deleteDir()
         }
         success {
