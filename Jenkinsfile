@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -31,15 +32,15 @@ pipeline {
             }
         }
     // for running docker image
-    //     stage('Run Docker Container') {
-    //         steps {
-    //             // Clean up if already running
-    //             bat 'docker rm -f node-app || true'
-    //             // Run the container
-    //             bat 'docker run -d --name node-app -p 3000:3000 my-node-app'
-    //         }
-    //     }
-    // }
+        stage('Run Docker Container') {
+            steps {
+                // Clean up if already running
+                bat 'docker rm -f node-app || true'
+                // Run the container
+                bat 'docker run -d --name node-app -p 3000:3000 my-node-app'
+            }
+        }
+    }
     post {
          always {
             echo 'Cleaning workspace and releasing agent...'
@@ -52,5 +53,6 @@ pipeline {
         failure {
             echo '❌ Build failed!'
         }
+    }
     }
 }
