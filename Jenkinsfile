@@ -40,61 +40,6 @@ pipeline {
     //         }
     //     }
     // }
-        stage('Check Kubernetes Cluster') {
-          steps {
-            bat 'kubectl config current-context'
-            bat 'kubectl cluster-info'
-            bat 'kubectl get nodes'
-          }
-        }
-        
-        stage('Deploy to Kubernetes') {
-            steps {
-                script {
-                    def deleteStatus = bat(script: 'kubectl delete -f deployment.yaml', returnStatus: true)
-                    if (deleteStatus != 0) {
-                        echo 'No existing deployment to delete or deletion failed, continuing...'
-                    }
-                }
-                bat 'kubectl apply -f deployment.yaml'
-            }
-        }
-        
-        stage('Expose Service') {
-            steps {
-                bat 'kubectl apply -f service.yaml'
-            }
-        }
-
-        stage('Verify Deployment') {
-            steps {
-                bat 'kubectl get pods'
-                bat 'kubectl get svc'
-            }
-        }
-
-        stage('Access App') {
-            steps {
-                script {  // Get Minikube IP
-            def minikubeIp = bat(script: 'minikube ip', returnStdout: true).trim()
-            
-            // Get service JSON and save to a file to avoid parsing issues
-            bat 'kubectl get svc my-node-service -o json > svc.json'
-            
-            // Read JSON from the saved file
-            def json = readJSON file: 'svc.json'
-            
-            // Extract nodePort from JSON
-            def nodePort = json.spec.ports[0].nodePort
-            
-            // Compose app URL
-            def appUrl = "http://${minikubeIp}:${nodePort}"
-            
-            echo "🌐 Application URL: ${appUrl}"
-                }
-            }
-        }
-    }
     post {
          always {
             echo 'Cleaning workspace and releasing agent...'
